@@ -2010,6 +2010,63 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/ts-loader/index.js??clonedRuleSet-6[0].rules[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/PlexTester.vue?vue&type=script&lang=ts&":
+/*!********************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/ts-loader/index.js??clonedRuleSet-6[0].rules[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/PlexTester.vue?vue&type=script&lang=ts& ***!
+  \********************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _services_plex_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/plex.service */ "./resources/js/services/plex.service.ts");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (vue__WEBPACK_IMPORTED_MODULE_1__.default.extend({
+  props: {
+    url: {
+      required: true,
+      type: String
+    },
+    token: {
+      required: true,
+      type: String
+    }
+  },
+  data: function data() {
+    return {
+      testing: true,
+      error: '',
+      success: false
+    };
+  },
+  mounted: function mounted() {
+    var _this = this;
+
+    var plexService = new _services_plex_service__WEBPACK_IMPORTED_MODULE_0__.default(this.url, this.token);
+    plexService.connect().subscribe({
+      next: function next() {
+        _this.success = true;
+        _this.testing = false;
+
+        _this.$emit('tested');
+      },
+      error: function error(message) {
+        _this.success = false;
+        _this.error = message;
+        _this.testing = false;
+
+        _this.$emit('tested');
+      }
+    });
+  }
+}));
+
+/***/ }),
+
 /***/ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/ts-loader/index.js??clonedRuleSet-6[0].rules[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/pages/AdminAddPoster.vue?vue&type=script&lang=ts&":
 /*!*******************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** ./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/ts-loader/index.js??clonedRuleSet-6[0].rules[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/pages/AdminAddPoster.vue?vue&type=script&lang=ts& ***!
@@ -2320,20 +2377,28 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
+/* harmony import */ var vue__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.esm.js");
 /* harmony import */ var _services_settings_service__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/settings.service */ "./resources/js/services/settings.service.ts");
 /* harmony import */ var _components_Loader_vue__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../components/Loader.vue */ "./resources/js/components/Loader.vue");
+/* harmony import */ var _config__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../config */ "./resources/js/config.ts");
+/* harmony import */ var _components_PlexTester_vue__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/PlexTester.vue */ "./resources/js/components/PlexTester.vue");
 
 
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (vue__WEBPACK_IMPORTED_MODULE_2__.default.extend({
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (vue__WEBPACK_IMPORTED_MODULE_4__.default.extend({
   components: {
-    Loader: _components_Loader_vue__WEBPACK_IMPORTED_MODULE_1__.default
+    Loader: _components_Loader_vue__WEBPACK_IMPORTED_MODULE_1__.default,
+    PlexTester: _components_PlexTester_vue__WEBPACK_IMPORTED_MODULE_3__.default
   },
   data: function data() {
     return {
       loading: true,
-      interval: null,
+      plex_testing: false,
+      interval: '',
+      plex_url: '',
+      plex_token: '',
       settings: []
     };
   },
@@ -2357,7 +2422,9 @@ __webpack_require__.r(__webpack_exports__);
       });
     },
     parseSettings: function parseSettings() {
-      this.interval = this.getSettingValue('interval', '5000');
+      this.interval = this.getSettingValue('interval', _config__WEBPACK_IMPORTED_MODULE_2__.default.settings.defaults.interval.toString());
+      this.plex_url = this.getSettingValue('plex_url', '');
+      this.plex_token = this.getSettingValue('plex_token', '');
     },
     getSettingValue: function getSettingValue(key, def) {
       var _a;
@@ -2369,6 +2436,36 @@ __webpack_require__.r(__webpack_exports__);
       return ((_a = this.settings.find(function (setting) {
         return setting.key === key;
       })) === null || _a === void 0 ? void 0 : _a.value) || def;
+    },
+    save: function save(e) {
+      var _this = this;
+
+      e.preventDefault();
+      var settingsService = new _services_settings_service__WEBPACK_IMPORTED_MODULE_0__.default();
+      this.loading = true;
+      settingsService.update({
+        interval: this.interval || '',
+        plex_url: this.plex_url || '',
+        plex_token: this.plex_token || ''
+      }).subscribe({
+        next: function next() {
+          _this.loadSettings();
+        },
+        error: function error(message) {
+          console.error(message);
+          _this.loading = false;
+        }
+      });
+    },
+    testPlex: function testPlex() {
+      this.plex_testing = true;
+    }
+  },
+  computed: {
+    canTestPlex: function canTestPlex() {
+      var saved_plex_url = this.getSettingValue('plex_url'),
+          saved_plex_token = this.getSettingValue('plex_token');
+      return !this.plex_testing && saved_plex_url !== null && saved_plex_url !== '' && saved_plex_token !== null && saved_plex_url !== '';
     }
   }
 }));
@@ -2621,6 +2718,56 @@ var router = new vue_router__WEBPACK_IMPORTED_MODULE_8__.default({
 
 /***/ }),
 
+/***/ "./resources/js/services/plex.service.ts":
+/*!***********************************************!*\
+  !*** ./resources/js/services/plex.service.ts ***!
+  \***********************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! axios */ "./node_modules/axios/index.js");
+/* harmony import */ var axios__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(axios__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var rxjs__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! rxjs */ "./node_modules/rxjs/dist/esm5/internal/Observable.js");
+
+
+
+var PlexService =
+/** @class */
+function () {
+  function PlexService(url, token) {
+    this.url = url;
+    this.token = token;
+  }
+
+  PlexService.prototype.generateUrl = function (endpoint) {
+    return 'http://' + this.url + '/' + endpoint + '?X-Plex-Token=' + this.token;
+  };
+
+  PlexService.prototype.connect = function () {
+    var _this = this;
+
+    return new rxjs__WEBPACK_IMPORTED_MODULE_1__.Observable(function (subscriber) {
+      console.log('Attempting to connect to Plex Server at ', _this.generateUrl(''));
+      axios__WEBPACK_IMPORTED_MODULE_0___default().get(_this.generateUrl('')).then(function (response) {
+        console.log('Data Found', response.data);
+        subscriber.next(true);
+      })["catch"](function (err) {
+        subscriber.error(err);
+      });
+    });
+  };
+
+  return PlexService;
+}();
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (PlexService);
+
+/***/ }),
+
 /***/ "./resources/js/services/poster.service.ts":
 /*!*************************************************!*\
   !*** ./resources/js/services/poster.service.ts ***!
@@ -2813,6 +2960,18 @@ function () {
       axios__WEBPACK_IMPORTED_MODULE_1___default().put('/api/settings/' + key).then(function (response) {
         var setting = new _models_setting__WEBPACK_IMPORTED_MODULE_0__.default().deserialize(response.data.data);
         subscriber.next(setting);
+      });
+    });
+  };
+
+  SettingsService.prototype.update = function (settings) {
+    return new rxjs__WEBPACK_IMPORTED_MODULE_2__.Observable(function (subscriber) {
+      axios__WEBPACK_IMPORTED_MODULE_1___default().patch('/api/settings', {
+        settings: settings
+      }).then(function (response) {
+        subscriber.next(true);
+      })["catch"](function (error) {
+        subscriber.error(error);
       });
     });
   };
@@ -26397,6 +26556,45 @@ component.options.__file = "resources/js/components/Modal.vue"
 
 /***/ }),
 
+/***/ "./resources/js/components/PlexTester.vue":
+/*!************************************************!*\
+  !*** ./resources/js/components/PlexTester.vue ***!
+  \************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _PlexTester_vue_vue_type_template_id_66d4fa0e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./PlexTester.vue?vue&type=template&id=66d4fa0e& */ "./resources/js/components/PlexTester.vue?vue&type=template&id=66d4fa0e&");
+/* harmony import */ var _PlexTester_vue_vue_type_script_lang_ts___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./PlexTester.vue?vue&type=script&lang=ts& */ "./resources/js/components/PlexTester.vue?vue&type=script&lang=ts&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+;
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__.default)(
+  _PlexTester_vue_vue_type_script_lang_ts___WEBPACK_IMPORTED_MODULE_1__.default,
+  _PlexTester_vue_vue_type_template_id_66d4fa0e___WEBPACK_IMPORTED_MODULE_0__.render,
+  _PlexTester_vue_vue_type_template_id_66d4fa0e___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "resources/js/components/PlexTester.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
 /***/ "./resources/js/pages/Admin.vue":
 /*!**************************************!*\
   !*** ./resources/js/pages/Admin.vue ***!
@@ -26740,6 +26938,22 @@ __webpack_require__.r(__webpack_exports__);
 
 /***/ }),
 
+/***/ "./resources/js/components/PlexTester.vue?vue&type=script&lang=ts&":
+/*!*************************************************************************!*\
+  !*** ./resources/js/components/PlexTester.vue?vue&type=script&lang=ts& ***!
+  \*************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_ts_loader_index_js_clonedRuleSet_6_0_rules_0_node_modules_vue_loader_lib_index_js_vue_loader_options_PlexTester_vue_vue_type_script_lang_ts___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!../../../node_modules/ts-loader/index.js??clonedRuleSet-6[0].rules[0]!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./PlexTester.vue?vue&type=script&lang=ts& */ "./node_modules/babel-loader/lib/index.js??clonedRuleSet-5[0].rules[0].use[0]!./node_modules/ts-loader/index.js??clonedRuleSet-6[0].rules[0]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/PlexTester.vue?vue&type=script&lang=ts&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_clonedRuleSet_5_0_rules_0_use_0_node_modules_ts_loader_index_js_clonedRuleSet_6_0_rules_0_node_modules_vue_loader_lib_index_js_vue_loader_options_PlexTester_vue_vue_type_script_lang_ts___WEBPACK_IMPORTED_MODULE_0__.default); 
+
+/***/ }),
+
 /***/ "./resources/js/pages/AdminAddPoster.vue?vue&type=script&lang=ts&":
 /*!************************************************************************!*\
   !*** ./resources/js/pages/AdminAddPoster.vue?vue&type=script&lang=ts& ***!
@@ -26995,6 +27209,23 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Modal_vue_vue_type_template_id_53ab54d2___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
 /* harmony export */ });
 /* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Modal_vue_vue_type_template_id_53ab54d2___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Modal.vue?vue&type=template&id=53ab54d2& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/Modal.vue?vue&type=template&id=53ab54d2&");
+
+
+/***/ }),
+
+/***/ "./resources/js/components/PlexTester.vue?vue&type=template&id=66d4fa0e&":
+/*!*******************************************************************************!*\
+  !*** ./resources/js/components/PlexTester.vue?vue&type=template&id=66d4fa0e& ***!
+  \*******************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PlexTester_vue_vue_type_template_id_66d4fa0e___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PlexTester_vue_vue_type_template_id_66d4fa0e___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_PlexTester_vue_vue_type_template_id_66d4fa0e___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../../node_modules/vue-loader/lib/index.js??vue-loader-options!./PlexTester.vue?vue&type=template&id=66d4fa0e& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/PlexTester.vue?vue&type=template&id=66d4fa0e&");
 
 
 /***/ }),
@@ -27371,6 +27602,43 @@ var render = function() {
       staticClass: "modal-backdrop fade",
       class: { "show d-block": _vm.show, "d-none": !_vm.show }
     })
+  ])
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/PlexTester.vue?vue&type=template&id=66d4fa0e&":
+/*!**********************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./resources/js/components/PlexTester.vue?vue&type=template&id=66d4fa0e& ***!
+  \**********************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render),
+/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("div", [
+    _vm.testing
+      ? _c("span", { staticClass: "test-primary" }, [_vm._v("Testing")])
+      : _c("div", [
+          _vm.success
+            ? _c("span", { staticClass: "text-success" }, [
+                _vm._v("Connection Successful!")
+              ])
+            : _c("span", { staticClass: "text-danger" }, [
+                _vm._v("A connection error occurred! " + _vm._s(_vm.error))
+              ])
+        ])
   ])
 }
 var staticRenderFns = []
@@ -28045,7 +28313,108 @@ var render = function() {
                   }
                 })
               ])
-            ])
+            ]),
+            _vm._v(" "),
+            _c("div", { staticClass: "row mb-3" }, [
+              _c(
+                "label",
+                {
+                  staticClass: "col-sm-2 col-form-label",
+                  attrs: { for: "plex_url" }
+                },
+                [_vm._v("Plex Server Credentials")]
+              ),
+              _vm._v(" "),
+              _c("div", { staticClass: "col-sm-10" }, [
+                _c("div", { staticClass: "input-group" }, [
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.plex_url,
+                        expression: "plex_url"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: {
+                      type: "text",
+                      id: "plex_url",
+                      placeholder: "Plex Server URL Goes Here",
+                      disabled: _vm.plex_testing
+                    },
+                    domProps: { value: _vm.plex_url },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.plex_url = $event.target.value
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("input", {
+                    directives: [
+                      {
+                        name: "model",
+                        rawName: "v-model",
+                        value: _vm.plex_token,
+                        expression: "plex_token"
+                      }
+                    ],
+                    staticClass: "form-control",
+                    attrs: {
+                      type: "text",
+                      id: "plex_token",
+                      placeholder: "Plex Server Token Goes Here",
+                      disabled: _vm.plex_testing
+                    },
+                    domProps: { value: _vm.plex_token },
+                    on: {
+                      input: function($event) {
+                        if ($event.target.composing) {
+                          return
+                        }
+                        _vm.plex_token = $event.target.value
+                      }
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-secondary",
+                      attrs: { type: "button", disabled: !_vm.canTestPlex },
+                      on: { click: _vm.testPlex }
+                    },
+                    [_vm._v("Test Connection")]
+                  )
+                ]),
+                _vm._v(" "),
+                _c(
+                  "small",
+                  [
+                    _vm.plex_testing
+                      ? _c("plex-tester", {
+                          attrs: { url: this.plex_url, token: this.plex_token }
+                        })
+                      : _vm._e()
+                  ],
+                  1
+                )
+              ])
+            ]),
+            _vm._v(" "),
+            _c(
+              "button",
+              {
+                staticClass: "btn btn-primary",
+                attrs: { type: "submit" },
+                on: { click: _vm.save }
+              },
+              [_vm._v("Save Settings")]
+            )
           ])
     ],
     1

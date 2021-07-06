@@ -32,6 +32,7 @@ $router->group(['prefix' => 'api'], function ($router) {
 
     $router->group(['prefix' => 'settings'], function ($router) {
         $router->get('/', 'SettingsController@index');
+        $router->patch('/', 'SettingsController@update');
         $router->get('{key}', 'SettingsController@get');
         $router->put('{key}', 'SettingsController@set');
     });

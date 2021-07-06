@@ -24,11 +24,27 @@ class SettingsController extends Controller
             'value' => 'required'
         ]);
 
-        $setting = Setting::updateOrCreate(
-            ['key' => $key],
-            ['key' => $key, 'value' => $request->value]
-        );
+        $setting = $this->setValue($key, $request->value);
 
         return new SettingsResource($setting);
+    }
+
+    public function update(Request $request)
+    {
+        $this->validate($request, [
+            'settings' => 'array'
+        ]);
+
+        foreach ($request->settings as $key => $value) {
+            $this->setValue($key, $value);
+        }
+    }
+
+    protected function setValue($key, $value): Setting
+    {
+        return Setting::updateOrCreate(
+            ['key' => $key],
+            ['value' => $value]
+        );
     }
 }

@@ -51,4 +51,14 @@ export default class SettingsService {
             });
         });
     }
+
+    update(settings: {[key: string]: string}): Observable<boolean> {
+        return new Observable(subscriber => {
+            axios.patch('/api/settings', { settings: settings }).then(response => {
+                subscriber.next(true);
+            }).catch(error => {
+                subscriber.error(error);
+            });
+        });
+    }
 }
